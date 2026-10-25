@@ -384,7 +384,13 @@ export class Board implements IBoard {
     return false
   }
 
-  movePiece(piece: IPiece, targetCol: number, targetRow: number): void {
+  movePiece(col: number, row: number, targetCol: number, targetRow: number): void {
+
+    const piece = this.tiles[row][col].piece
+
+    if(!piece) {
+      throw new Error("invalid movement")
+    }
 
     if(!this.isMoveValid(piece, targetCol, targetRow)) {
       throw new Error("invalid movement")
