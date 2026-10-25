@@ -1,0 +1,9 @@
+{
+	"name": "rps",
+	"private": true,
+	"workspaces": [
+		"frontend",
+		"backend",
+		"shared"
+	]
+}

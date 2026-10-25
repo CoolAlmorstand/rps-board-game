@@ -1,0 +1,21 @@
+{
+	"name": "backend",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "tsx watch src/index.ts",
+		"build": "tsc --project tsconfig.json",
+		"start": "node dist/index.js"
+	},
+	"dependencies": {
+		"express": "^5.3.0",
+		"@rps/shared": "0.0.1",
+		"socket.io": "^4.8.4"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.6",
+		"tsx": "^4.23.15",
+		"typescript": "^6.0.3"
+	}
+}
