@@ -138,16 +138,32 @@ export class Board implements IBoard {
   }
 
   private updateZoneOfControlOfAllTiles() {
-    for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
-      for (let columnIndex = 0; columnIndex < this.cols; columnIndex++) {
-        this.updateTileZoneOfControl(columnIndex, rowIndex) 
+    for (const row of this.tiles) {
+      for (const tile of row) {
+        tile.blueZoneOfControl = {
+          paper: false,
+          rock: false,
+          scissors: false,
+        };
+
+        tile.redZoneOfControl = {
+          paper: false,
+          rock: false,
+          scissors: false,
+        };
+      }
+    }
+
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.cols; col++) {
+        this.updateTileZoneOfControl(col, row);
       }
     }
   }
 
   private getMovePenalty(piece: IPiece, targetCol: number, targetRow: number): number {
     const targetTile = this.tiles[targetRow][targetCol]  
-    const targetTileZoc = piece.team == "blue" ? targetTile.redZoneOfControl : targetTile.redZoneOfControl
+    const targetTileZoc = piece.team == "blue" ? targetTile.redZoneOfControl : targetTile.blueZoneOfControl
 
     if(piece.type == "paper") {
       if(targetTileZoc.scissors) {
@@ -368,7 +384,13 @@ export class Board implements IBoard {
     return false
   }
 
-  movePiece(piece: IPiece, targetCol: number, targetRow: number): void {
+  movePiece(col: number, row: number, targetCol: number, targetRow: number): void {
+
+    const piece = this.tiles[row][col].piece
+
+    if(!piece) {
+      throw new Error("invalid movement")
+    }
 
     if(!this.isMoveValid(piece, targetCol, targetRow)) {
       throw new Error("invalid movement")

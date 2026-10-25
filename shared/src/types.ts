@@ -48,7 +48,7 @@ export interface IBoard {
   cols: number;
   rows: number;
   
-  movePiece(piece: IPiece, targetCol: number, targetRow: number): void;
+  movePiece(col: number, row: number, targetCol: number, targetRow: number): void;
   getPieceMovements(piece: IPiece): {col: number; row: number}[]; 
   checkWinCondition(): {winner?: "red" | "blue"}
 }
