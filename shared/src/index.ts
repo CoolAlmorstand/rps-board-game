@@ -147,7 +147,7 @@ export class Board implements IBoard {
 
   private getMovePenalty(piece: IPiece, targetCol: number, targetRow: number): number {
     const targetTile = this.tiles[targetRow][targetCol]  
-    const targetTileZoc = piece.team == "blue" ? targetTile.redZoneOfControl : targetTile.redZoneOfControl
+    const targetTileZoc = piece.team == "blue" ? targetTile.redZoneOfControl : targetTile.blueZoneOfControl
 
     if(piece.type == "paper") {
       if(targetTileZoc.scissors) {
