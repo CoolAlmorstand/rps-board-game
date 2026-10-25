@@ -25,5 +25,9 @@
 	"imports": {
 		"#lib": "./src/lib/index.js",
 		"#lib/*": "./src/lib/*"
+	},
+	"dependencies": {
+		"@rps/shared": "0.0.1",
+		"socket.io-client": "^4.8.4"
 	}
 }
