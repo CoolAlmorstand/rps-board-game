@@ -138,9 +138,25 @@ export class Board implements IBoard {
   }
 
   private updateZoneOfControlOfAllTiles() {
-    for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
-      for (let columnIndex = 0; columnIndex < this.cols; columnIndex++) {
-        this.updateTileZoneOfControl(columnIndex, rowIndex) 
+    for (const row of this.tiles) {
+      for (const tile of row) {
+        tile.blueZoneOfControl = {
+          paper: false,
+          rock: false,
+          scissors: false,
+        };
+
+        tile.redZoneOfControl = {
+          paper: false,
+          rock: false,
+          scissors: false,
+        };
+      }
+    }
+
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.cols; col++) {
+        this.updateTileZoneOfControl(col, row);
       }
     }
   }
