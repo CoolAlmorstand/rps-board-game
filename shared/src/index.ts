@@ -1,4 +1,4 @@
-import { IBoard, ITile, IPiece, IPieceType } from "./types.ts";
+import type { IBoard, ITile, IPiece, IPieceType } from "./types.ts";
 
 export * from "./types.ts"
 
