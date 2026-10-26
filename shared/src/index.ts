@@ -1,17 +1,17 @@
-import { IBoard, ITile, IPiece, IPieceType } from "./types.ts";
+import type { IBoard, ITile, IPiece, IPieceType } from "./types.ts";
 
 export * from "./types.ts"
 
 
-const BACK_ROW_LAYOUT: IPieceType[] = [
+const BACK_ROW_LAYOUT: (IPieceType | null)[] = [
   "scissors", "paper", "scissors", "rock", "paper",
   "paper", "rock", "scissors", "paper", "scissors",
 ];
 
 // Starting piece for each column on the row in front of the back row.
-const FRONT_ROW_LAYOUT: IPieceType[] = [
-  "rock", "scissors", "rock", "scissors", "rock",
-  "rock", "scissors", "rock", "scissors", "rock",
+const FRONT_ROW_LAYOUT: (IPieceType | null)[] = [
+  "rock", null, "rock", null, "rock",
+  "rock", null, "rock", null, "rock",
 ];
 
 const PIECE_TYPE_EACH_TYPE_DEFEATS: Record<IPiece["type"], IPiece["type"]> = {
@@ -51,9 +51,9 @@ export class Board implements IBoard {
 
     switch (pieceType) {
       case "paper":
-        return { ...sharedStartingValues, type: "paper", maxMovementPoints: 2, movement: "rook" };
+        return { ...sharedStartingValues, type: "paper", maxMovementPoints: 3, movement: "rook" };
       case "scissors":
-        return { ...sharedStartingValues, type: "scissors", maxMovementPoints: 2, movement: "bishop" };
+        return { ...sharedStartingValues, type: "scissors", maxMovementPoints: 3, movement: "bishop" };
       case "rock":
         return { ...sharedStartingValues, type: "rock", maxMovementPoints: 1, movement: "king" };
     }
@@ -106,14 +106,17 @@ export class Board implements IBoard {
       for (let columnIndex = 0; columnIndex < this.cols; columnIndex++) {
         let startingPiece: IPiece | null = null;
 
-        if (rowIndex === 0) {
-          startingPiece = this.createPiece(BACK_ROW_LAYOUT[columnIndex], columnIndex, rowIndex, "blue");
-        } else if (rowIndex === 1) {
-          startingPiece = this.createPiece(FRONT_ROW_LAYOUT[columnIndex], columnIndex, rowIndex, "blue");
-        } else if (rowIndex === lastRowIndex - 1) {
-          startingPiece = this.createPiece(FRONT_ROW_LAYOUT[columnIndex], columnIndex, rowIndex, "red");
-        } else if (rowIndex === lastRowIndex) {
-          startingPiece = this.createPiece(BACK_ROW_LAYOUT[columnIndex], columnIndex, rowIndex, "red");
+        const backRowPieceType = BACK_ROW_LAYOUT[columnIndex];
+        const frontRowPieceType = FRONT_ROW_LAYOUT[columnIndex];
+
+        if (rowIndex === 0 && backRowPieceType != null) {
+          startingPiece = this.createPiece(backRowPieceType, columnIndex, rowIndex, "blue");
+        } else if (rowIndex === 1 && frontRowPieceType != null) {
+          startingPiece = this.createPiece(frontRowPieceType, columnIndex, rowIndex, "blue");
+        } else if (rowIndex === lastRowIndex - 1 && frontRowPieceType != null) {
+          startingPiece = this.createPiece(frontRowPieceType, columnIndex, rowIndex, "red");
+        } else if (rowIndex === lastRowIndex && backRowPieceType != null) {
+          startingPiece = this.createPiece(backRowPieceType, columnIndex, rowIndex, "red");
         }
 
         tiles[rowIndex].push({
