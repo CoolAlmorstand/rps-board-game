@@ -26,7 +26,7 @@
   const displayRows = $derived.by(() => {
     const rows: number[] = [];
 
-    if (playerTeam === 'blue') {
+    if (playerTeam === 'red') {
       for (let row = 0; row < board.rows; row++) {
         rows.push(row);
       }
