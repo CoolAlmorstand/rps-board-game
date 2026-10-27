@@ -4,14 +4,14 @@ export * from "./types.ts"
 
 
 const BACK_ROW_LAYOUT: (IPieceType | null)[] = [
-  "scissors", "paper", "scissors", "rock", "paper",
-  "paper", "rock", "scissors", "paper", "scissors",
+  "paper", "paper", "scissors", "rock", "paper",
+  "paper", "rock", "scissors", "paper", "paper",
 ];
 
 // Starting piece for each column on the row in front of the back row.
 const FRONT_ROW_LAYOUT: (IPieceType | null)[] = [
-  "rock", null, "rock", null, "rock",
-  "rock", null, "rock", null, "rock",
+  "rock", "scissors", "rock", "scissors", "rock",
+  "rock", "scissors", "rock", "scissors", "rock",
 ];
 
 const PIECE_TYPE_EACH_TYPE_DEFEATS: Record<IPiece["type"], IPiece["type"]> = {
