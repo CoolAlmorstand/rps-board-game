@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import { SERVER_URL } from "$app/env/public"
 
   console.log(`SERVER_URL: ${SERVER_URL}`)
@@ -57,6 +58,10 @@
 
   function createGame(): void {
     onCreateGame(savedUsername, generateRoomCode());
+  }
+
+  function startPassAndPlay(): void {
+    void goto(`/game/${generateRoomCode()}?mode=pass-and-play`);
   }
 
   function joinGame(event: SubmitEvent): void {
@@ -153,6 +158,14 @@
               class="w-full border-[3px] border-[#17130f] bg-[#e4572e] px-4 py-3 text-sm font-black uppercase tracking-[0.15em] text-[#fffaf0] shadow-[4px_4px_0_#17130f] transition-transform hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#2a9d8f]"
             >
               Create game
+            </button>
+
+            <button
+              type="button"
+              onclick={startPassAndPlay}
+              class="w-full border-[3px] border-[#17130f] bg-[#f6c945] px-4 py-3 text-sm font-black uppercase tracking-[0.15em] shadow-[4px_4px_0_#17130f] transition-transform hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#2a9d8f]"
+            >
+              Pass &amp; play
             </button>
 
             {#if !isJoinFormOpen}

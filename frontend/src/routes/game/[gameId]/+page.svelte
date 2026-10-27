@@ -5,14 +5,18 @@
   import BoardView from '#lib/components/Board.svelte';
 
   const gameId = $derived(page.params.gameId ?? '');
+  const isPassAndPlay = $derived(page.url.searchParams.get('mode') === 'pass-and-play');
 
-  let playerTeam = $state<'blue' | 'red' | null>(null);
+  let activeTeam = $state<'blue' | 'red' | null>(null);
   let board = new Board(10, 10);
   let boardTiles = $state(board.tiles);
   board.tiles = boardTiles;
   let selectedPiece = $state<IPiece | null>(null);
   let legalMoves = $state<{ col: number; row: number }[]>([]);
   let winner = $state<'blue' | 'red' | null>(null);
+  let autoFlip = $state(true);
+
+  const perspectiveTeam = $derived(isPassAndPlay && !autoFlip ? 'blue' : activeTeam);
 
   type BoardApi = {
     highlightTile: (col: number, row: number, shouldHighlight?: boolean) => void;
@@ -23,7 +27,13 @@
   let boardView = $state<BoardApi>();
 
   onMount(() => {
-    playerTeam = Math.random() < 0.5 ? 'red' : 'blue';
+    if (isPassAndPlay) {
+      activeTeam = 'blue';
+      return;
+    }
+
+    const assignedTeam = Math.random() < 0.5 ? 'red' : 'blue';
+    activeTeam = assignedTeam;
   });
 
   function clearSelection(): void {
@@ -42,7 +52,7 @@
   }
 
   function handleTileClick(tile: ITile): void {
-    if (winner || !playerTeam) return;
+    if (winner || !activeTeam) return;
 
     const isLegalTarget = legalMoves.some(
       (move) => move.col === tile.col && move.row === tile.row
@@ -52,10 +62,14 @@
       board.movePiece(selectedPiece.col, selectedPiece.row, tile.col, tile.row);
       clearSelection();
       winner = board.checkWinCondition().winner ?? null;
+
+      if (!winner && isPassAndPlay) {
+        activeTeam = activeTeam === 'blue' ? 'red' : 'blue';
+      }
       return;
     }
 
-    if (tile.piece?.team === playerTeam) {
+    if (tile.piece?.team === activeTeam) {
       if (selectedPiece?.col === tile.col && selectedPiece?.row === tile.row) {
         clearSelection();
         return;
@@ -84,17 +98,20 @@
       <div class="text-center">
         <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-[#5b5148]">Game</p>
         <h1 class="text-lg font-black uppercase tracking-tight">{gameId}</h1>
+        {#if isPassAndPlay}
+          <p class="mt-1 inline-block border-2 border-[#17130f] bg-[#f6c945] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15em]">Pass &amp; play</p>
+        {/if}
       </div>
 
       <div class="min-w-24 text-right">
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5b5148]">You are</p>
-        {#if playerTeam}
+        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5b5148]">{isPassAndPlay ? 'Turn' : 'You are'}</p>
+        {#if activeTeam}
           <p
             class="mt-1 inline-block border-2 border-[#17130f] px-2 py-1 text-[11px] font-black uppercase tracking-[0.15em] text-[#fffaf0] shadow-[2px_2px_0_#17130f]"
-            class:bg-[#2563eb]={playerTeam === 'blue'}
-            class:bg-[#e4572e]={playerTeam === 'red'}
+            class:bg-[#2563eb]={activeTeam === 'blue'}
+            class:bg-[#e4572e]={activeTeam === 'red'}
           >
-            {playerTeam}
+            {activeTeam}
           </p>
         {:else}
           <p class="mt-1 text-[11px] font-bold uppercase tracking-[0.15em]">Assigning…</p>
@@ -104,11 +121,11 @@
   </header>
 
   <section class="relative mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center gap-5 p-5 sm:p-8">
-    {#if playerTeam}
+    {#if activeTeam}
       <div class="relative w-full max-w-2xl">
         <BoardView
           {board}
-          {playerTeam}
+          playerTeam={perspectiveTeam ?? 'blue'}
           {selectedPiece}
           {legalMoves}
           onTileClick={handleTileClick}
@@ -127,10 +144,25 @@
 
       <div class="flex w-full max-w-2xl flex-wrap items-center justify-between gap-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#5b5148]">
-          {selectedPiece ? 'Pick a highlighted tile' : 'Select one of your pieces'}
+          {selectedPiece ? 'Pick a highlighted tile' : `Select a ${activeTeam} piece`}
         </p>
 
         <div class="flex gap-2">
+          {#if isPassAndPlay}
+            <button
+              type="button"
+              role="switch"
+              aria-checked={autoFlip}
+              onclick={() => (autoFlip = !autoFlip)}
+              class="flex items-center gap-2 border-2 border-[#17130f] bg-[#fffaf0] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] shadow-[2px_2px_0_#17130f] hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17130f]"
+            >
+              Auto flip
+              <span class="border border-[#17130f] px-1 {autoFlip ? 'bg-[#2a9d8f] text-[#fffaf0]' : 'bg-[#e8dfcd]'}">
+                {autoFlip ? 'On' : 'Off'}
+              </span>
+            </button>
+          {/if}
+
           <button
             type="button"
             onclick={() => boardView?.toggleZone('blue')}
