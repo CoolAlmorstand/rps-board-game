@@ -1,4 +1,4 @@
-import type { IBoard, ITile, IPiece, IPieceType } from "./types.ts";
+import type { BoardState, IBoard, ITile, IPiece, IPieceType } from "./types.ts";
 
 export * from "./types.ts"
 
@@ -37,6 +37,20 @@ export class Board implements IBoard {
     this.tiles = this.setupInitialBoardState()
 
     this.updateZoneOfControlOfAllTiles()
+  }
+
+  static fromState(state: BoardState): Board {
+    const board = new Board(state.cols, state.rows)
+    board.tiles = state.tiles
+    return board
+  }
+
+  getState(): BoardState {
+    return {
+      cols: this.cols,
+      rows: this.rows,
+      tiles: this.tiles,
+    }
   }
 
   private createPiece( pieceType: IPieceType, columnIndex: number, rowIndex: number, team: "red" | "blue"): IPiece { 

@@ -11,8 +11,8 @@
   }
 
   let {
-    onCreateGame = (username, roomCode) => console.log('create', username, roomCode),
-    onJoinGame = (username, roomCode) => console.log('join', username, roomCode)
+    onCreateGame = (_username, roomCode) => void goto(`/game/${roomCode}?mode=online&create=1`),
+    onJoinGame = (_username, roomCode) => void goto(`/game/${roomCode}?mode=online`)
   }: Props = $props();
 
   const USERNAME_STORAGE_KEY = 'rps-username';
