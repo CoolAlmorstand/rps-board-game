@@ -83,7 +83,7 @@ export type MovePayload = {
   toRow: number;
 };
 
-export type SocketAck = { ok: true } | { ok: false; error: string };
+export type SocketAck = { ok: true; team?: Team } | { ok: false; error: string };
 
 export interface ClientToServerEvents {
   create_game: (payload: CreateGamePayload, acknowledge: (response: SocketAck) => void) => void;
